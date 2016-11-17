@@ -7,48 +7,59 @@
 using namespace std;
 
 class Card{
+    private:
+        int value;
+        string suit;
     public:
-        int get_value(){return value;};
-        string get_suit(){return suit;};
+        int get_value(){return value;}
+        string get_suit(){return suit;}
         Card(int valueInput, string suitInput){
             value=valueInput;
             suit = suitInput;
             }
-        Card(){};
-    private:
-        int value;
-        string suit;
+        Card(){}
+        ~Card(){}
+        void set_value(int x){value = x;}
+        void set_suit(string x){suit = x;}
 };
 
 
 class Deck{
   public:
-  vector<Card> a;    //vector made of cards
-  Deck(){} //default constructor
-  void pop();
-  void peek();
+  vector<Card> a;  //vector made of cards
+  Deck(){}//default constructor
+  ~Deck(){}
+  Card pop();
+  Card peek();
+  void push(Card x){a.push_back(x);}
   void shuffle();
   int searchHand(int v);
+  //vector<Card> get_deck(){return a;}
   //void discard(int index, Deck* d); (we think this method should belong to the Player class)
 };
 
 
-void Deck::peek(){ //prints the value of the top card of the deck
+Card Deck::peek(){ //prints the value of the top card of the deck
     if(a.size() > 0){
     cout << a[a.size()-1].get_value() << " of " << a[a.size()-1].get_suit() << endl;
+    return a[a.size()-1];
     }
+
+    return  Card(); 
 }
 
 //remove the top element of the deck
-void Deck::pop(){
+Card Deck::pop(){
 
   if(a.empty()){ //check to make sure the stack is not empty
     cout << "\nNo cards left\n";
+    return  Card();
   }
 
   else{ //if there is an element to remove, return it and decrement top
     Card d = a[a.size()-1];
     cout << d.get_value() << " of "  << d.get_suit() << endl;
+    return d;
   }
 }
 
