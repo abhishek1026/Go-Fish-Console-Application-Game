@@ -38,16 +38,6 @@ class Deck{
   //void discard(int index, Deck* d); (we think this method should belong to the Player class)
 };
 
-class player{
-    int numPairs;
-    Deck* hand;
-    string name;
-    
-    string set_name(string name);
-    void easyComp();
-    void hardComp();
-    
-};
 
 Card Deck::peek(){ //prints the value of the top card of the deck
     if(a.size() > 0){
@@ -94,17 +84,21 @@ int Deck::searchHand(int x){ //see if someone's hand contains a certain card
     return -1; //returns index of the matching card if it exists, -1 if it does not exist
 }
 
-string player::set_Name(string name){
-        name = "player1";
-    }
-    void player::easyComp(){
-        vector<Card> a;
-         srand(time(NULL));
-         int num = (rand() %13) +1;
-         cout << num;
-    }
-    void player::hardComp(){   
-    }
+
+class Player{
+    private:
+    int score;
+    Deck* hand;
+    string name;
+    public:
+    Player(string x){set_name(x);}
+    void set_name(string name){this.name = name;}
+    string get_name(){return this.name;}
+    int get_score(){return this.score;} 
+    Deck* get_hand(){return this.hand;}
+
+};
+
 
 int main(){
     string theSuit = "spades";
