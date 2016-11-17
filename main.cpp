@@ -1,6 +1,11 @@
+#include <vector>
+#include <ctime>
 #include <cstdlib>
 #include <iostream>
 #include <string>
+
+#include "card.cpp"
+
 
 using namespace std;
 
