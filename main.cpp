@@ -90,7 +90,7 @@ void startNewGame(){
             //Initialize Computer
         
     
-        //Initialize User
+            //Initialize User
     
     //Initialize main deck
     
