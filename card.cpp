@@ -3,136 +3,166 @@
 #include <cmath>
 #include <cstdlib>
 #include <vector>
+#include <string>
 
 using namespace std;
 
-class Card{
-    private:
-        int value;
-        string suit;
-    public:
-        int get_value(){return value;}
-        string get_suit(){return suit;}
-        Card(int valueInput, string suitInput){
-            value=valueInput;
-            suit = suitInput;
-            }
-        Card(){}
-        ~Card(){}
-        void set_value(int x){value = x;}
-        void set_suit(string x){suit = x;}
-};
+class Card
+{
+  private:
+    int value;
+    string suit;
 
-
-class Deck{
   public:
-  vector<Card> a;  //vector made of cards
-  Deck(){}//default constructor
-  ~Deck(){}
-  Card pop();
-  Card peek();
-  void push(Card x){a.push_back(x);}
-  void shuffle();
-  int searchHand(int v);
-  //vector<Card> get_deck(){return a;}
-  //void discard(int index, Deck* d); (we think this method should belong to the Player class)
+    int get_value() { return value; }
+    string get_suit() { return suit; }
+    Card(int valueInput, string suitInput)
+    {
+        value = valueInput;
+        suit = suitInput;
+    }
+    Card() {}
+    ~Card() {}
+    void set_value(int x) { value = x; }
+    void set_suit(string x) { suit = x; }
+    string toString();
 };
 
+string Card::toString()
+{
 
-Card Deck::peek(){ //prints the value of the top card of the deck
-    if(a.size() > 0){
-    cout << a[a.size()-1].get_value() << " of " << a[a.size()-1].get_suit() << endl;
-    return a[a.size()-1];
+    string result;
+
+    result = to_string(value) + " of " + suit;
+
+    return result;
+}
+
+class Deck
+{
+  public:
+    vector<Card> a;
+    Deck() {}
+    ~Deck() {}
+    Card pop();
+    Card peek();
+    void push(Card x) { a.push_back(x); }
+    void shuffle(vector<Card> *);
+    int searchHand(int v);
+};
+
+Card Deck::peek()
+{
+    if (a.size() > 0)
+    {
+        Card d = a[a.size() - 1];
+        cout << d.get_value() << " of " << d.get_suit() << endl;
+        return d;
     }
-
-    return  Card(); 
+    else
+        return Card();
 }
 
-//remove the top element of the deck
-Card Deck::pop(){
-
-  if(a.empty()){ //check to make sure the stack is not empty
-    cout << "\nNo cards left\n";
-    return  Card();
-  }
-
-  else{ //if there is an element to remove, return it and decrement top
-    Card d = a[a.size()-1];
-    cout << d.get_value() << " of "  << d.get_suit() << endl;
-    return d;
-  }
+Card Deck::pop()
+{
+    if (a.size() > 0)
+    {
+        Card d = a[a.size() - 1];
+        cout << d.get_value() << " of " << d.get_suit() << endl;
+        a.erase(a.begin() + (a.size() - 1));
+        return d;
+    }
+    else
+        return Card();
 }
 
-void Deck::shuffle(){ //shuffle the deck
+void Deck::shuffle(vector<Card> *x)
+{ //shuffle the deck
+    vector<Card> a = *x;
     srand(time(NULL));
     int index1, index2;
     Card temp;
-    for(int i=0; i<52; i++){
-        index1 = rand() % 52; //choose two random cards and swap them
-        index2 = rand() % 52;
+    int size = x->size();
+    for (int i = 0; i < 100; i++)
+    {
+        index1 = rand() % size; //choose two random cards and swap them
+        index2 = rand() % size;
         temp = a[index1];
         a[index1] = a[index2];
         a[index2] = temp;
     }
 }
 
-int Deck::searchHand(int x){ //see if someone's hand contains a certain card
-    for(int i=0; i<a.size(); i++){
-        if(a[i].get_value()==x)
+int Deck::searchHand(int x)
+{ //see if someone's hand contains a certain card
+    for (int i = 0; i < a.size(); i++)
+    {
+        if (a[i].get_value() == x)
             return i;
     }
     return -1; //returns index of the matching card if it exists, -1 if it does not exist
 }
 
-
-class Player{
-    private:
+class Player
+{
+  private:
     int score;
-    Deck* hand;
+    vector<Card> hand;
     string name;
-    public:
-    Player(string x){set_name(x);}
-    void set_name(string name){this.name = name;}
-    string get_name(){return this.name;}
-    int get_score(){return this.score;} 
-    Deck* get_hand(){return this.hand;}
 
+  public:
+    Player()
+    {
+        score = 0;
+    }
+    Player(string x)
+    {
+        set_name(x);
+        score = 0;
+    }
+    ~Player() {}
+    void set_name(string x) { name = x; }
+    string get_name() { return name; }
+    int get_score() { return score; }
+    vector<Card> get_hand() { return hand; }
+    void showHand(vector<Card> *);
 };
 
+void Player::showHand(vector<Card> *x)
+{
+    vector<Card> a = *x;
 
-int main(){
-    string theSuit = "spades";
-    Deck theDeck;
+    for (int i = 0; i < x->size(); i++)
+    {
+        cout << a[i].get_value() << " of " << a[i].get_suit() << endl;
+    }
+}
 
-    //initialize the deck
-    for(int i = 1; i<=13; i++){
-        Card c(i,theSuit);
-        theDeck.a.push_back(c);
-        theDeck.peek();
-    }
-    theSuit = "clubs";
-    for(int i = 1; i<=13; i++){
-        Card c(i,theSuit);
-        theDeck.a.push_back(c);
-        theDeck.peek();
-    }
-    theSuit = "diamonds";
-    for(int i = 1; i<=13; i++){
-        Card c(i,theSuit);
-        theDeck.a.push_back(c);
-        theDeck.peek();
-    }
-    theSuit = "hearts";
-    for(int i = 1; i<=13; i++){
-        Card c(i,theSuit);
-        theDeck.a.push_back(c);
-        theDeck.peek();
-    }
-    cout << "\n";
-    theDeck.shuffle(); //shuffle
-    for(int i = 0; i<52; i++){
-        cout << theDeck.a[i].get_value() << " of " << theDeck.a[i].get_suit() << "\n\n";
+int main()
+{
+
+    Player abhi("raj");
+
+    vector<Card> cards = (abhi.get_hand());
+
+    for (int i = 1; i < 11; i++)
+    {
+        cards.push_back(Card(i, "Spades"));
+        cout << "# of cards: " << cards.size() << endl;
     }
 
-return 0;
+    Deck d;
+
+    d.shuffle(&cards);
+
+    cout << abhi.get_name() << " has these cards in his hand: " << endl;
+
+    for (int i = 0; i < cards.size(); i++)
+    {
+        cout << cards[i].get_value() << "  " << cards[i].get_suit() << endl;
+    }
+
+    abhi.showHand(&cards);
+
+    return 0;
 }
