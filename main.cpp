@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 
+#include "card.cpp"
+
 using namespace std;
 
 void displayRules();
