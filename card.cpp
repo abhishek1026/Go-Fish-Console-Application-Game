@@ -47,7 +47,7 @@ class Deck
     Card pop();
     Card peek();
     void push(Card x) { a.push_back(x); }
-    void shuffle(vector<Card> *);
+    vector<Card> shuffle(vector<Card> *x);
     int searchHand(int v);
 };
 
@@ -76,13 +76,13 @@ Card Deck::pop()
         return Card();
 }
 
-void Deck::shuffle(vector<Card> *x)
+vector<Card> Deck::shuffle(vector<Card> *x)
 { //shuffle the deck
-    vector<Card> a = *x;
     srand(time(NULL));
     int index1, index2;
     Card temp;
     int size = x->size();
+    vector<Card> a = *x;
     for (int i = 0; i < 100; i++)
     {
         index1 = rand() % size; //choose two random cards and swap them
@@ -91,6 +91,8 @@ void Deck::shuffle(vector<Card> *x)
         a[index1] = a[index2];
         a[index2] = temp;
     }
+
+    return a;
 }
 
 int Deck::searchHand(int x)
@@ -145,24 +147,28 @@ int main()
 
     vector<Card> cards = (abhi.get_hand());
 
+    vector<Card> *cardspointer = &cards;
+
     for (int i = 1; i < 11; i++)
     {
         cards.push_back(Card(i, "Spades"));
         cout << "# of cards: " << cards.size() << endl;
     }
 
-    Deck d;
-
-    d.shuffle(&cards);
-
-    cout << abhi.get_name() << " has these cards in his hand: " << endl;
+    cout << abhi.get_name() << " has these cards in his hand before shuffling: " << endl;
 
     for (int i = 0; i < cards.size(); i++)
     {
         cout << cards[i].get_value() << "  " << cards[i].get_suit() << endl;
     }
 
-    abhi.showHand(&cards);
+    Deck d;
+
+    cards = d.shuffle(cardspointer);
+
+    cout << "After shuffling: " << endl;
+
+    abhi.showHand(cardspointer);
 
     return 0;
 }
