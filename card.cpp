@@ -131,6 +131,7 @@ class Player
     Card grabFromHand(vector<Card> *, int);
     void removePairs(vector<Card> *);
     int lastInd(vector<Card> *, int);
+    int searchHand(int r, vector<Card> *);
 };
 
 void Player::showHand(vector<Card> *x)
@@ -186,7 +187,20 @@ int Player::lastInd(vector<Card> *d, int c)
     return -1;
 }
 
-/*int main()
+int Player::searchHand(int r, vector<Card> *x)
+{
+    for (int i = 0; i < x->size(); i++)
+    {
+        if (x->at(i).get_value() == r)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int main()
 {
 
     Player abhi("abhi");
@@ -249,4 +263,4 @@ int Player::lastInd(vector<Card> *d, int c)
     cout << raj.get_name() << " has a score of: " << raj.get_score() << endl;
 
     return 0;
-}*/
+}
