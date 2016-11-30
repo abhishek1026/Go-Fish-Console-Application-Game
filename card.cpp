@@ -128,6 +128,9 @@ class Player
     int get_score() { return score; }
     vector<Card> get_hand() { return hand; }
     void showHand(vector<Card> *);
+    Card grabFromHand(vector<Card> *, int);
+    void removePairs(vector<Card> *);
+    int lastInd(vector<Card> *, int);
 };
 
 void Player::showHand(vector<Card> *x)
@@ -140,10 +143,53 @@ void Player::showHand(vector<Card> *x)
     }
 }
 
-int main()
+Card Player::grabFromHand(vector<Card> *x, int index)
+{
+    Card result = x->at(index);
+    x->erase(x->begin() + index);
+
+    return result;
+}
+
+void Player::removePairs(vector<Card> *x)
+{
+    int size = x->size();
+
+    for (int i = 0;
+         i < (size - 1);
+         i++)
+    {
+        int index = lastInd(x, x->at(i).get_value());
+        if (index > i)
+        {
+            x->erase(x->begin() + index);
+            x->erase(x->begin() + i);
+            score++;
+            i--;
+        }
+        size = x->size();
+    }
+}
+
+int Player::lastInd(vector<Card> *d, int c)
+{
+    int start;
+
+    for (start = d->size() - 1; start >= 0; start--)
+    {
+        if (d->at(start).get_value() == c)
+        {
+            return start;
+        }
+    }
+
+    return -1;
+}
+
+/*int main()
 {
 
-    Player abhi("raj");
+    Player abhi("abhi");
 
     vector<Card> cards = (abhi.get_hand());
 
@@ -170,5 +216,37 @@ int main()
 
     abhi.showHand(cardspointer);
 
+    Player raj("raj");
+
+    vector<Card> rajhand = raj.get_hand();
+
+    vector<Card> *rajptr = &rajhand;
+
+    rajhand.push_back(Card(1, "Hearts"));
+
+    rajhand.push_back(Card(2, "Hearts"));
+
+    cout << raj.get_name() << " has these cards in his hand before grabbing: " << endl;
+
+    raj.showHand(rajptr);
+
+    rajhand.push_back(raj.grabFromHand(cardspointer, abhi.lastInd(cardspointer, 1)));
+
+    rajhand.push_back(raj.grabFromHand(cardspointer, abhi.lastInd(cardspointer, 2)));
+
+    cout << "Cards with value 1 and 2 taken from Player 1 and given to Player 2: " << endl;
+
+    cout << raj.get_name() << " has these cards in his hand after grabbing: " << endl;
+
+    raj.showHand(rajptr);
+
+    cout << abhi.get_name() << " has these cards in his hand after getting robbed: " << endl;
+
+    abhi.showHand(cardspointer);
+
+    raj.removePairs(rajptr);
+
+    cout << raj.get_name() << " has a score of: " << raj.get_score() << endl;
+
     return 0;
-}
+}*/
