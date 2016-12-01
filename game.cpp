@@ -5,28 +5,11 @@
 #include <vector>
 #include <string>
 
+#include "deck.h"
+#include "card.h"
+#include "player.h"
+
 using namespace std;
-
-class Card
-{
-  private:
-    int value;
-    string suit;
-
-  public:
-    int get_value() { return value; }
-    string get_suit() { return suit; }
-    Card(int valueInput, string suitInput)
-    {
-        value = valueInput;
-        suit = suitInput;
-    }
-    Card() {}
-    ~Card() {}
-    void set_value(int x) { value = x; }
-    void set_suit(string x) { suit = x; }
-    string toString();
-};
 
 string Card::toString()
 {
@@ -37,19 +20,6 @@ string Card::toString()
 
     return result;
 }
-
-class Deck
-{
-  public:
-    vector<Card> a;
-    Deck() {}
-    ~Deck() {}
-    Card pop();
-    Card peek();
-    void push(Card x) { a.push_back(x); }
-    vector<Card> shuffle(vector<Card> *x);
-    int searchHand(int v);
-};
 
 Card Deck::peek()
 {
@@ -104,38 +74,6 @@ int Deck::searchHand(int x)
     }
     return -1; //returns index of the matching card if it exists, -1 if it does not exist
 }
-
-class Player
-{
-  private:
-    int score;
-    vector<Card> hand;
-    string name;
-
-  public:
-    bool isOut;
-    Player()
-    {
-        isOut = false;
-        score = 0;
-    }
-    Player(string x)
-    {
-        set_name(x);
-        score = 0;
-        isOut = false;
-    }
-    ~Player() {}
-    void set_name(string x) { name = x; }
-    string get_name() { return name; }
-    int get_score() { return score; }
-    vector<Card> get_hand() { return hand; }
-    void showHand(vector<Card> *);
-    Card grabFromHand(vector<Card> *, int);
-    void removePairs(vector<Card> *);
-    int lastInd(vector<Card> *, int);
-    int searchHand(int r, vector<Card> *);
-};
 
 void Player::showHand(vector<Card> *x)
 {

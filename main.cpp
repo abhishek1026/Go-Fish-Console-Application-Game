@@ -6,7 +6,7 @@
 #include <string>
 #include <unistd.h>
 
-#include "card.cpp"
+#include "game.cpp"
 
 using namespace std;
 
