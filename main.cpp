@@ -1,3 +1,10 @@
+/*Semester Project
+Go Fish console application with 3 AIs
+COP3503
+Abhishek Patel, Michael Thomas, Althea Smith,
+Joshua Misura, John Collier, Devin Blem
+*/
+
 #include <iostream>
 #include <ctime>
 #include <cmath>
@@ -10,25 +17,29 @@
 
 using namespace std;
 
+//declare methods
 void displayRules();
 int displayMenu();
 void startNewGame();
 
+//time (in microseconds) that program will pause between lines of output
 unsigned int tt = 500000;
 
 int main()
 {
+    //Welcome user upon startup and show menu
     int menuChoice;
     cout << "Welcome to Go Fish \n"
          << endl;
     usleep(tt);
     menuChoice = displayMenu();
 
+    //while loop to allow user to play multiple games before ending the program
     while (menuChoice != 3)
     {
         switch (menuChoice)
         {
-        case 1:
+        case 1: //if the user chooses to start a new game
         {
             usleep(tt);
             startNewGame();
@@ -36,7 +47,7 @@ int main()
             usleep(tt);
             break;
         }
-        case 2:
+        case 2: //if the user chooses to show the rules
         {
             usleep(tt);
             displayRules();
@@ -44,7 +55,7 @@ int main()
             usleep(tt);
             break;
         }
-        default:
+        default: //if the input choice is not 1, 2, or 3
             usleep(tt);
             cout << "Sorry that is not a valid choice. Please choose another option." << endl;
             usleep(tt);
@@ -52,12 +63,15 @@ int main()
             usleep(tt);
         }
     }
+
+    //if the user chooses to end the program
     cout << "Thanks for playing!\n";
     return 0;
 }
 
-//Displays a menu to the user that allows them to start a game or
-//view the rules.
+/*Displays a menu to the user that allows them to choose between
+(1) starting a new game, (2) viewing the rules, or (3)ending the program
+Returns the user's choice*/
 int displayMenu()
 {
     int result;
@@ -68,6 +82,7 @@ int displayMenu()
     return result;
 }
 
+//Prints a brief description of the rules of Go Fish
 void displayRules()
 {
 
@@ -93,7 +108,9 @@ void displayRules()
     return;
 }
 
-//Sets up a new game
+/*Starts and controls the execution of a new game. Within this method, the user
+and the AIs may take turns choosing card values to "ask" the player next to them
+for. This continues until three of the four players have no cards left*/
 void startNewGame()
 {
     string playerName;
@@ -103,11 +120,14 @@ void startNewGame()
     cout << "Enter your name: ";
     cin >> playerName;
 
+    //initializing player objects (one user and three AIs) based on their names
     Player user(playerName);
     Player a1("AI#1");
     Player a2("AI#2");
     Player a3("AI#3");
 
+    /*initialize hands (vectors of Card objects) for each player,
+    as well as pointers to them*/
     vector<Card> hand = (user.get_hand());
 
     vector<Card> *handptr = &hand;
@@ -123,6 +143,11 @@ void startNewGame()
     vector<Card> hand3 = (a3.get_hand());
 
     vector<Card> *handptr3 = &hand3;
+
+    /*initialize the draw pile, which is a Deck type. The Deck type
+    contains a vector of Cards, which is initialized below to contain
+    13 cards for each suit, just like a normal deck of cards. A card of
+    value 1 represents an ace, 11 is jack, 12 is queen, and 13 is king*/
 
     Deck pile;
 
@@ -146,10 +171,15 @@ void startNewGame()
         pile.a.push_back(Card(i, "Clubs"));
     }
 
+    /*run the shuffle method on the draw pile so that it is no longer
+    in sorted order*/
     pile.a = pile.shuffle(&pile.a);
 
+    //for loop to deal out seven cards to each player
     for (int i = 0; i < 28; i++)
     {
+        /*cycle through the four players, adding the top card in the draw
+        pile to the current player's hand*/
         int who = i % 4;
 
         switch (who)
@@ -172,6 +202,8 @@ void startNewGame()
         }
     }
 
+    /*When the users are dealt their card, there may already be matches. Remove
+    those matching cards before the game starts*/
     user.removePairs(handptr);
 
     a1.removePairs(handptr1);
@@ -180,32 +212,39 @@ void startNewGame()
 
     a3.removePairs(handptr3);
 
+    //initialize local variables
     int ctr = 0;
     int numOut = 0;
+
+    //Add the players to an array to make it easier to cycle through them
     Player *plyarr = new Player[4];
     plyarr[0] = user;
     plyarr[1] = a1;
     plyarr[2] = a2;
     plyarr[3] = a3;
-    do
+    do /*do-while loop to continue the game until three of the four players
+        are out of cards*/
     {
-
+        //cycle through players
         int whoGoes = ctr % 4;
 
         switch (whoGoes)
         {
-        case 0:
-            if (!user.isOut)
+        case 0:              //if it is the user's turn
+            if (!user.isOut) //if user is out of cards, skip their turn
             {
                 int userChoice;
                 int trnctr = 1;
-                do
+                do //allow user to keep making moves until it is no longer their turn
                 {
+                    //show user their hand and ask what card value they want to ask for
                     cout << "Your hand consists of the following: " << endl;
                     user.showHand(handptr);
                     cout << endl;
                     cout << "Pick the rank(integer(1 for Ace, 11 for Jack, 12 for Queen and 13 for King)) to ask for from the next player: ";
                     cin >> userChoice;
+
+                    //set 'select' to the hand of the player who is being asked for pairs
                     if (trnctr == whoGoes)
                         trnctr++;
                     trnctr = trnctr % 4;
@@ -225,11 +264,16 @@ void startNewGame()
                         select = handptr3;
                         break;
                     }
-                    if (!plyarr[trnctr].isOut)
+
+                    if (!plyarr[trnctr].isOut) //if the player being asked still has Cards in their hand
                     {
+                        //search that player's hand for the specified card value
                         if (user.searchHand(userChoice, select) != -1)
                         {
+                            //if the card exists, add it to the current player's hand
                             hand.push_back(user.grabFromHand(select, user.searchHand(userChoice, select)));
+
+                            //if you've removed the last card in that player's hand, print that to the screen
                             if (select->size() == 0)
                             {
                                 cout << plyarr[trnctr].get_name() << " has run out of cards in hand!" << endl;
@@ -238,6 +282,8 @@ void startNewGame()
                             }
                             user.removePairs(handptr);
                             cout << "Cool! You got the card you were looking for!" << endl;
+
+                            //if the current player is out of cards, print that and change their 'isOut' bool to true
                             if (hand.size() == 0)
                             {
                                 cout << "Congrats! You have run out of cards in hand!" << endl;
@@ -246,12 +292,15 @@ void startNewGame()
                                 break;
                             }
                         }
-                        else
+
+                        else //if the player you asked does not have the specified card in their hand
                         {
                             cout << "You must go fish from the draw pile! Picking up now!" << endl;
                             if (pile.a.size() > 0)
                             {
                                 Card chosen = pile.a[pile.a.size() - 1];
+
+                                //change face card values to strings
                                 string showIfChange;
                                 int dispRank = chosen.get_value();
                                 bool change = false;
@@ -276,6 +325,8 @@ void startNewGame()
                                 }
                                 string dispRanks = to_string(dispRank);
                                 string display = change ? showIfChange : dispRanks;
+
+                                //draw a card from the draw pile and print it to the screen if the current player is the user
                                 hand.push_back(user.grabFromHand(&pile.a, pile.a.size() - 1));
                                 cout << "You picked up " << display << " of " << chosen.get_suit() << endl;
                                 user.removePairs(handptr);
@@ -286,25 +337,26 @@ void startNewGame()
                                     numOut++;
                                 }
                             }
-                            else
+                            else //if the draw pile is empty
                             {
                                 cout << "Sorry! Nothing in draw pile!" << endl;
                             }
                             break;
                         }
                     }
-                    trnctr++;
-                } while (true);
+                    trnctr++;   //move to the next player
+                } while (true); //end of do-while loop for each turn
             }
             break;
 
-        case 1:
+        case 1: //if it is AI#1's turn
             if (!a1.isOut)
             {
 
                 int trnctr1 = 2;
                 do
                 {
+                    //have the AI choose a random card from their hand to ask for
                     int randChoice = rand() % hand1.size();
                     int u1 = hand1[randChoice].get_value();
                     if (trnctr1 == whoGoes)
@@ -528,8 +580,9 @@ void startNewGame()
             break;
         }
         ctr++;
-    } while (numOut < 3);
+    } while (numOut < 3); //while there is more than one player still in the game
 
+    //print the final scores for each player
     cout << "Game has ended! Here are the final scores for each player: " << endl;
 
     cout << user.get_name() << ": " << user.get_score() << " points" << endl;
