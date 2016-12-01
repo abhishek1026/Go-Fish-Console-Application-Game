@@ -243,6 +243,12 @@ void startNewGame()
                     cout << endl;
                     cout << "Pick the rank(integer(1 for Ace, 11 for Jack, 12 for Queen and 13 for King)) to ask for from the next player: ";
                     cin >> userChoice;
+                    
+                    //Makes sure user picks a valid value
+                    while(userChoice < 1 || userChoice > 13){
+                        cout << "Invalid choice, pick a value (1 - 13)";
+                        cin >> userChoice;
+                    }
 
                     //set 'select' to the hand of the player who is being asked for pairs
                     if (trnctr == whoGoes)
