@@ -113,14 +113,17 @@ class Player
     string name;
 
   public:
+    bool isOut;
     Player()
     {
+        isOut = false;
         score = 0;
     }
     Player(string x)
     {
         set_name(x);
         score = 0;
+        isOut = false;
     }
     ~Player() {}
     void set_name(string x) { name = x; }
@@ -136,11 +139,34 @@ class Player
 
 void Player::showHand(vector<Card> *x)
 {
-    vector<Card> a = *x;
 
     for (int i = 0; i < x->size(); i++)
     {
-        cout << a[i].get_value() << " of " << a[i].get_suit() << endl;
+        string showIfChange;
+        int dispRank = x->at(i).get_value();
+        bool change = false;
+        switch (dispRank)
+        {
+        case 1:
+            showIfChange = "Ace";
+            change = true;
+            break;
+        case 11:
+            showIfChange = "Jack";
+            change = true;
+            break;
+        case 12:
+            showIfChange = "Queen";
+            change = true;
+            break;
+        case 13:
+            showIfChange = "King";
+            change = true;
+            break;
+        }
+        string dispRanks = to_string(dispRank);
+        string display = change ? showIfChange : dispRanks;
+        cout << display << " of " << x->at(i).get_suit() << endl;
     }
 }
 
@@ -198,69 +224,4 @@ int Player::searchHand(int r, vector<Card> *x)
     }
 
     return -1;
-}
-
-int main()
-{
-
-    Player abhi("abhi");
-
-    vector<Card> cards = (abhi.get_hand());
-
-    vector<Card> *cardspointer = &cards;
-
-    for (int i = 1; i < 11; i++)
-    {
-        cards.push_back(Card(i, "Spades"));
-        cout << "# of cards: " << cards.size() << endl;
-    }
-
-    cout << abhi.get_name() << " has these cards in his hand before shuffling: " << endl;
-
-    for (int i = 0; i < cards.size(); i++)
-    {
-        cout << cards[i].get_value() << "  " << cards[i].get_suit() << endl;
-    }
-
-    Deck d;
-
-    cards = d.shuffle(cardspointer);
-
-    cout << "After shuffling: " << endl;
-
-    abhi.showHand(cardspointer);
-
-    Player raj("raj");
-
-    vector<Card> rajhand = raj.get_hand();
-
-    vector<Card> *rajptr = &rajhand;
-
-    rajhand.push_back(Card(1, "Hearts"));
-
-    rajhand.push_back(Card(2, "Hearts"));
-
-    cout << raj.get_name() << " has these cards in his hand before grabbing: " << endl;
-
-    raj.showHand(rajptr);
-
-    rajhand.push_back(raj.grabFromHand(cardspointer, abhi.lastInd(cardspointer, 1)));
-
-    rajhand.push_back(raj.grabFromHand(cardspointer, abhi.lastInd(cardspointer, 2)));
-
-    cout << "Cards with value 1 and 2 taken from Player 1 and given to Player 2: " << endl;
-
-    cout << raj.get_name() << " has these cards in his hand after grabbing: " << endl;
-
-    raj.showHand(rajptr);
-
-    cout << abhi.get_name() << " has these cards in his hand after getting robbed: " << endl;
-
-    abhi.showHand(cardspointer);
-
-    raj.removePairs(rajptr);
-
-    cout << raj.get_name() << " has a score of: " << raj.get_score() << endl;
-
-    return 0;
 }
