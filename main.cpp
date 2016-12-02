@@ -31,7 +31,6 @@ int main()
     int menuChoice;
     cout << "Welcome to Go Fish \n"
          << endl;
-    usleep(tt);
     menuChoice = displayMenu();
 
     //while loop to allow user to play multiple games before ending the program
@@ -41,26 +40,19 @@ int main()
         {
         case 1: //if the user chooses to start a new game
         {
-            usleep(tt);
             startNewGame();
             menuChoice = displayMenu();
-            usleep(tt);
             break;
         }
         case 2: //if the user chooses to show the rules
         {
-            usleep(tt);
             displayRules();
             menuChoice = displayMenu();
-            usleep(tt);
             break;
         }
         default: //if the input choice is not 1, 2, or 3
-            usleep(tt);
             cout << "Sorry that is not a valid choice. Please choose another option." << endl;
-            usleep(tt);
             menuChoice = displayMenu();
-            usleep(tt);
         }
     }
 
@@ -101,7 +93,7 @@ void displayRules()
     cout << "If a player succesfully finds a match from another player, the player's turn continues, as he or she can keep asking other players(clockwise) until the player is forced to go fish." << endl;
 
     cout << "Ending The Game:" << endl;
-    cout << "Play continues until 3 players' hands are empty.\n"
+    cout << "Play continues until 2 players' hands are empty.\n"
             " The winner is the player with the most pairs/points at the end of the game."
          << endl;
 
@@ -110,7 +102,7 @@ void displayRules()
 
 /*Starts and controls the execution of a new game. Within this method, the user
 and the AIs may take turns choosing card values to "ask" the player next to them
-for. This continues until three of the four players have no cards left*/
+for. This continues until two of the four players have no cards left*/
 void startNewGame()
 {
     string playerName;
@@ -212,7 +204,7 @@ void startNewGame()
 
     a3.removePairs(handptr3);
 
-    //initialize local variables
+    //initialize local variables (counters for player's turns and number of players out)
     int ctr = 0;
     int numOut = 0;
 
@@ -222,7 +214,7 @@ void startNewGame()
     plyarr[1] = a1;
     plyarr[2] = a2;
     plyarr[3] = a3;
-    do /*do-while loop to continue the game until three of the four players
+    do /*do-while loop to continue the game until two of the four players
         are out of cards*/
     {
         //cycle through players
@@ -243,9 +235,10 @@ void startNewGame()
                     cout << endl;
                     cout << "Pick the rank(integer(1 for Ace, 11 for Jack, 12 for Queen and 13 for King)) to ask for from the next player: ";
                     cin >> userChoice;
-                    
+
                     //Makes sure user picks a valid value
-                    while(userChoice < 1 || userChoice > 13){
+                    while (userChoice < 1 || userChoice > 13)
+                    {
                         cout << "Invalid choice, pick a value (1 - 13)";
                         cin >> userChoice;
                     }
@@ -279,20 +272,26 @@ void startNewGame()
                             //if the card exists, add it to the current player's hand
                             hand.push_back(user.grabFromHand(select, user.searchHand(userChoice, select)));
 
+                            user.removePairs(handptr);
                             //if you've removed the last card in that player's hand, print that to the screen
+
+                            cout << "Cool! You got the card you were looking for!" << endl;
+
+                            usleep(tt);
+
                             if (select->size() == 0)
                             {
                                 cout << plyarr[trnctr].get_name() << " has run out of cards in hand!" << endl;
+                                usleep(tt);
                                 plyarr[trnctr].isOut = true;
                                 numOut++;
                             }
-                            user.removePairs(handptr);
-                            cout << "Cool! You got the card you were looking for!" << endl;
 
                             //if the current player is out of cards, print that and change their 'isOut' bool to true
                             if (hand.size() == 0)
                             {
                                 cout << "Congrats! You have run out of cards in hand!" << endl;
+                                usleep(tt);
                                 user.isOut = true;
                                 numOut++;
                                 break;
@@ -302,6 +301,7 @@ void startNewGame()
                         else //if the player you asked does not have the specified card in their hand
                         {
                             cout << "You must go fish from the draw pile! Picking up now!" << endl;
+                            usleep(tt);
                             if (pile.a.size() > 0)
                             {
                                 Card chosen = pile.a[pile.a.size() - 1];
@@ -335,10 +335,12 @@ void startNewGame()
                                 //draw a card from the draw pile and print it to the screen if the current player is the user
                                 hand.push_back(user.grabFromHand(&pile.a, pile.a.size() - 1));
                                 cout << "You picked up " << display << " of " << chosen.get_suit() << endl;
+                                usleep(tt);
                                 user.removePairs(handptr);
                                 if (hand.size() == 0)
                                 {
                                     cout << "Congrats! You have run out of cards in hand!" << endl;
+                                    usleep(tt);
                                     user.isOut = true;
                                     numOut++;
                                 }
@@ -346,6 +348,9 @@ void startNewGame()
                             else //if the draw pile is empty
                             {
                                 cout << "Sorry! Nothing in draw pile!" << endl;
+                                usleep(tt);
+                                trnctr++;
+                                continue;
                             }
                             break;
                         }
@@ -363,6 +368,10 @@ void startNewGame()
                 do
                 {
                     //have the AI choose a random card from their hand to ask for
+                    if (hand1.size() == 0)
+                    {
+                        break;
+                    }
                     int randChoice = rand() % hand1.size();
                     int u1 = hand1[randChoice].get_value();
                     if (trnctr1 == whoGoes)
@@ -389,17 +398,20 @@ void startNewGame()
                         if (user.searchHand(u1, select1) != -1)
                         {
                             hand1.push_back(user.grabFromHand(select1, user.searchHand(u1, select1)));
+                            a1.removePairs(handptr1);
+                            cout << "A1 got the card he or she was looking for!" << endl;
+                            usleep(tt);
                             if (select1->size() == 0)
                             {
                                 cout << plyarr[trnctr1].get_name() << " has run out of cards in hand!" << endl;
+                                usleep(tt);
                                 plyarr[trnctr1].isOut = true;
                                 numOut++;
                             }
-                            a1.removePairs(handptr1);
-                            cout << "A1 got the card he or she was looking for!" << endl;
                             if (hand1.size() == 0)
                             {
                                 cout << "A1 has run out of cards in hand!" << endl;
+                                usleep(tt);
                                 a1.isOut = true;
                                 numOut++;
                                 break;
@@ -408,14 +420,17 @@ void startNewGame()
                         else
                         {
                             cout << "A1 must go fish from the draw pile! Picking up now!" << endl;
+                            usleep(tt);
                             if (pile.a.size() > 0)
                             {
                                 hand1.push_back(a1.grabFromHand(&pile.a, pile.a.size() - 1));
                                 cout << "A1 picked up a card from the draw pile!" << endl;
+                                usleep(tt);
                                 a1.removePairs(handptr1);
                                 if (hand1.size() == 0)
                                 {
                                     cout << "A1 has run out of cards in hand!" << endl;
+                                    usleep(tt);
                                     a1.isOut = true;
                                     numOut++;
                                 }
@@ -424,7 +439,9 @@ void startNewGame()
                             else
                             {
                                 cout << "Nothing in draw pile!" << endl;
-                                break;
+                                usleep(tt);
+                                trnctr1++;
+                                continue;
                             }
                         }
                     }
@@ -439,6 +456,10 @@ void startNewGame()
                 int trnctr2 = 3;
                 do
                 {
+                    if (hand2.size() == 0)
+                    {
+                        break;
+                    }
                     int randChoice1 = rand() % hand2.size();
                     int u2 = hand2[randChoice1].get_value();
                     if (trnctr2 == whoGoes)
@@ -465,17 +486,20 @@ void startNewGame()
                         if (user.searchHand(u2, select2) != -1)
                         {
                             hand2.push_back(user.grabFromHand(select2, user.searchHand(u2, select2)));
+                            a2.removePairs(handptr2);
+                            cout << "A2 got the card he or she was looking for!" << endl;
+                            usleep(tt);
                             if (select2->size() == 0)
                             {
                                 cout << plyarr[trnctr2].get_name() << " has run out of cards in hand!" << endl;
+                                usleep(tt);
                                 plyarr[trnctr2].isOut = true;
                                 numOut++;
                             }
-                            a2.removePairs(handptr2);
-                            cout << "A2 got the card he or she was looking for!" << endl;
                             if (hand2.size() == 0)
                             {
                                 cout << "A2 has run out of cards in hand!" << endl;
+                                usleep(tt);
                                 a2.isOut = true;
                                 numOut++;
                                 break;
@@ -484,14 +508,17 @@ void startNewGame()
                         else
                         {
                             cout << "A2 must go fish from the draw pile! Picking up now!" << endl;
+                            usleep(tt);
                             if (pile.a.size() > 0)
                             {
                                 hand2.push_back(a2.grabFromHand(&pile.a, pile.a.size() - 1));
                                 cout << "A2 picked up a card from the draw pile!" << endl;
+                                usleep(tt);
                                 a2.removePairs(handptr2);
                                 if (hand2.size() == 0)
                                 {
                                     cout << "A2 has run out of cards in hand!" << endl;
+                                    usleep(tt);
                                     a2.isOut = true;
                                     numOut++;
                                 }
@@ -500,7 +527,9 @@ void startNewGame()
                             else
                             {
                                 cout << "Nothing in draw pile!" << endl;
-                                break;
+                                usleep(tt);
+                                trnctr2++;
+                                continue;
                             }
                         }
                     }
@@ -515,6 +544,10 @@ void startNewGame()
                 int trnctr3 = 0;
                 do
                 {
+                    if (hand3.size() == 0)
+                    {
+                        break;
+                    }
                     int randChoice2 = rand() % hand3.size();
                     int u3 = hand3[randChoice2].get_value();
                     if (trnctr3 == whoGoes)
@@ -541,17 +574,20 @@ void startNewGame()
                         if (user.searchHand(u3, select3) != -1)
                         {
                             hand3.push_back(user.grabFromHand(select3, user.searchHand(u3, select3)));
+                            a3.removePairs(handptr3);
+                            cout << "A3 got the card he or she was looking for!" << endl;
+                            usleep(tt);
                             if (select3->size() == 0)
                             {
                                 cout << plyarr[trnctr3].get_name() << "has run out of cards in hand!" << endl;
+                                usleep(tt);
                                 plyarr[trnctr3].isOut = true;
                                 numOut++;
                             }
-                            a3.removePairs(handptr3);
-                            cout << "A3 got the card he or she was looking for!" << endl;
                             if (hand3.size() == 0)
                             {
                                 cout << "A3 has run out of cards in hand!" << endl;
+                                usleep(tt);
                                 a3.isOut = true;
                                 numOut++;
                                 break;
@@ -560,14 +596,17 @@ void startNewGame()
                         else
                         {
                             cout << "A3 must go fish from the draw pile! Picking up now!" << endl;
+                            usleep(tt);
                             if (pile.a.size() > 0)
                             {
                                 hand3.push_back(a3.grabFromHand(&pile.a, pile.a.size() - 1));
                                 cout << "A3 picked up a card from the draw pile" << endl;
+                                usleep(tt);
                                 a3.removePairs(handptr3);
                                 if (hand3.size() == 0)
                                 {
                                     cout << "A3 has run out of cards in hand!" << endl;
+                                    usleep(tt);
                                     a3.isOut = true;
                                     numOut++;
                                 }
@@ -576,7 +615,9 @@ void startNewGame()
                             else
                             {
                                 cout << "Nothing in draw pile!" << endl;
-                                break;
+                                usleep(tt);
+                                trnctr3++;
+                                continue;
                             }
                         }
                     }
@@ -586,7 +627,7 @@ void startNewGame()
             break;
         }
         ctr++;
-    } while (numOut < 3); //while there is more than one player still in the game
+    } while (numOut < 2); //while there are more than 2 people still in the game.
 
     //print the final scores for each player
     cout << "Game has ended! Here are the final scores for each player: " << endl;
