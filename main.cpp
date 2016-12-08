@@ -23,7 +23,7 @@ int displayMenu();
 void startNewGame();
 
 //time (in microseconds) that program will pause between lines of output
-unsigned int tt = 500000;
+unsigned int tt = 750000;
 
 int main()
 {
