@@ -93,7 +93,7 @@ void displayRules()
     cout << "If a player succesfully finds a match from another player, the player's turn continues, as he or she can keep asking other players(clockwise) until the player is forced to go fish." << endl;
 
     cout << "Ending The Game:" << endl;
-    cout << "Play continues until 2 players' hands are empty.\n"
+    cout << "Play continues until 3 players' hands are empty.\n"
             " The winner is the player with the most pairs/points at the end of the game."
          << endl;
 
@@ -102,7 +102,7 @@ void displayRules()
 
 /*Starts and controls the execution of a new game. Within this method, the user
 and the AIs may take turns choosing card values to "ask" the player next to them
-for. This continues until two of the four players have no cards left*/
+for. This continues until three of the four players have no cards left*/
 void startNewGame()
 {
     string playerName;
@@ -214,7 +214,7 @@ void startNewGame()
     plyarr[1] = a1;
     plyarr[2] = a2;
     plyarr[3] = a3;
-    do /*do-while loop to continue the game until two of the four players
+    do /*do-while loop to continue the game until three of the four players
         are out of cards*/
     {
         //cycle through players
@@ -225,6 +225,7 @@ void startNewGame()
         case 0:              //if it is the user's turn
             if (!user.isOut) //if user is out of cards, skip their turn
             {
+                int aa = 0;
                 int userChoice;
                 int trnctr = 1;
                 do //allow user to keep making moves until it is no longer their turn
@@ -244,7 +245,7 @@ void startNewGame()
                     }
 
                     //set 'select' to the hand of the player who is being asked for pairs
-                    if (trnctr == whoGoes)
+                    if (trnctr == whoGoes + 4)
                         trnctr++;
                     trnctr = trnctr % 4;
                     vector<Card> *select;
@@ -279,12 +280,15 @@ void startNewGame()
 
                             usleep(tt);
 
+                            bool takeOut = false;
                             if (select->size() == 0)
                             {
                                 cout << plyarr[trnctr].get_name() << " has run out of cards in hand!" << endl;
                                 usleep(tt);
                                 plyarr[trnctr].isOut = true;
                                 numOut++;
+                                if (numOut == 3)
+                                    takeOut = true;
                             }
 
                             //if the current player is out of cards, print that and change their 'isOut' bool to true
@@ -296,6 +300,8 @@ void startNewGame()
                                 numOut++;
                                 break;
                             }
+                            if (takeOut)
+                                break;
                         }
 
                         else //if the player you asked does not have the specified card in their hand
@@ -347,16 +353,17 @@ void startNewGame()
                             }
                             else //if the draw pile is empty
                             {
-                                cout << "Sorry! Nothing in draw pile!" << endl;
+                                cout << "Sorry! Nothing in draw pile! Asking from next available player!" << endl;
                                 usleep(tt);
                                 trnctr++;
+                                aa++;
                                 continue;
                             }
                             break;
                         }
                     }
-                    trnctr++;   //move to the next player
-                } while (true); //end of do-while loop for each turn
+                    trnctr++;     //move to the next player
+                } while (aa < 3); //end of do-while loop for each turn
             }
             break;
 
@@ -365,6 +372,7 @@ void startNewGame()
             {
 
                 int trnctr1 = 2;
+                int bb = 0;
                 do
                 {
                     //have the AI choose a random card from their hand to ask for
@@ -374,7 +382,7 @@ void startNewGame()
                     }
                     int randChoice = rand() % hand1.size();
                     int u1 = hand1[randChoice].get_value();
-                    if (trnctr1 == whoGoes)
+                    if (trnctr1 == whoGoes + 4)
                         trnctr1++;
                     trnctr1 = trnctr1 % 4;
                     vector<Card> *select1;
@@ -401,12 +409,15 @@ void startNewGame()
                             a1.removePairs(handptr1);
                             cout << "A1 got the card he or she was looking for!" << endl;
                             usleep(tt);
+                            bool takeOut1 = false;
                             if (select1->size() == 0)
                             {
                                 cout << plyarr[trnctr1].get_name() << " has run out of cards in hand!" << endl;
                                 usleep(tt);
                                 plyarr[trnctr1].isOut = true;
                                 numOut++;
+                                if (numOut == 3)
+                                    takeOut1 = true;
                             }
                             if (hand1.size() == 0)
                             {
@@ -416,6 +427,8 @@ void startNewGame()
                                 numOut++;
                                 break;
                             }
+                            if (takeOut1)
+                                break;
                         }
                         else
                         {
@@ -438,15 +451,16 @@ void startNewGame()
                             }
                             else
                             {
-                                cout << "Nothing in draw pile!" << endl;
+                                cout << "Nothing in draw pile! Asking from next available player!" << endl;
                                 usleep(tt);
                                 trnctr1++;
+                                bb++;
                                 continue;
                             }
                         }
                     }
                     trnctr1++;
-                } while (true);
+                } while (bb < 3);
             }
             break;
 
@@ -454,6 +468,7 @@ void startNewGame()
             if (!a2.isOut)
             {
                 int trnctr2 = 3;
+                int cc = 0;
                 do
                 {
                     if (hand2.size() == 0)
@@ -462,7 +477,7 @@ void startNewGame()
                     }
                     int randChoice1 = rand() % hand2.size();
                     int u2 = hand2[randChoice1].get_value();
-                    if (trnctr2 == whoGoes)
+                    if (trnctr2 == whoGoes + 4)
                         trnctr2++;
                     trnctr2 = trnctr2 % 4;
                     vector<Card> *select2;
@@ -489,12 +504,15 @@ void startNewGame()
                             a2.removePairs(handptr2);
                             cout << "A2 got the card he or she was looking for!" << endl;
                             usleep(tt);
+                            bool takeOut2 = false;
                             if (select2->size() == 0)
                             {
                                 cout << plyarr[trnctr2].get_name() << " has run out of cards in hand!" << endl;
                                 usleep(tt);
                                 plyarr[trnctr2].isOut = true;
                                 numOut++;
+                                if (numOut == 3)
+                                    takeOut2 = true;
                             }
                             if (hand2.size() == 0)
                             {
@@ -504,6 +522,8 @@ void startNewGame()
                                 numOut++;
                                 break;
                             }
+                            if (takeOut2)
+                                break;
                         }
                         else
                         {
@@ -526,15 +546,16 @@ void startNewGame()
                             }
                             else
                             {
-                                cout << "Nothing in draw pile!" << endl;
+                                cout << "Nothing in draw pile! Asking from next available player!" << endl;
                                 usleep(tt);
                                 trnctr2++;
+                                cc++;
                                 continue;
                             }
                         }
                     }
                     trnctr2++;
-                } while (true);
+                } while (cc < 3);
             }
             break;
 
@@ -542,6 +563,7 @@ void startNewGame()
             if (!a3.isOut)
             {
                 int trnctr3 = 0;
+                int dd = 0;
                 do
                 {
                     if (hand3.size() == 0)
@@ -550,7 +572,7 @@ void startNewGame()
                     }
                     int randChoice2 = rand() % hand3.size();
                     int u3 = hand3[randChoice2].get_value();
-                    if (trnctr3 == whoGoes)
+                    if (trnctr3 == whoGoes + 4)
                         trnctr3++;
                     trnctr3 = trnctr3 % 4;
                     vector<Card> *select3;
@@ -577,12 +599,15 @@ void startNewGame()
                             a3.removePairs(handptr3);
                             cout << "A3 got the card he or she was looking for!" << endl;
                             usleep(tt);
+                            bool takeOut3 = false;
                             if (select3->size() == 0)
                             {
-                                cout << plyarr[trnctr3].get_name() << "has run out of cards in hand!" << endl;
+                                cout << plyarr[trnctr3].get_name() << " has run out of cards in hand!" << endl;
                                 usleep(tt);
                                 plyarr[trnctr3].isOut = true;
                                 numOut++;
+                                if (numOut == 3)
+                                    takeOut3 = false;
                             }
                             if (hand3.size() == 0)
                             {
@@ -592,6 +617,8 @@ void startNewGame()
                                 numOut++;
                                 break;
                             }
+                            if (takeOut3)
+                                break;
                         }
                         else
                         {
@@ -614,20 +641,21 @@ void startNewGame()
                             }
                             else
                             {
-                                cout << "Nothing in draw pile!" << endl;
+                                cout << "Nothing in draw pile! Asking from next available player!" << endl;
                                 usleep(tt);
                                 trnctr3++;
+                                dd++;
                                 continue;
                             }
                         }
                     }
                     trnctr3++;
-                } while (true);
+                } while (dd < 3);
             }
             break;
         }
         ctr++;
-    } while (numOut < 2); //while there are more than 2 people still in the game.
+    } while (numOut < 3); //while there are more than 1 player still in the game.
 
     //print the final scores for each player
     cout << "Game has ended! Here are the final scores for each player: " << endl;
@@ -639,4 +667,9 @@ void startNewGame()
     cout << a2.get_name() << ": " << a2.get_score() << " points" << endl;
 
     cout << a3.get_name() << ": " << a3.get_score() << " points" << endl;
+
+    int score = user.get_score();
+    //give a congrats message if the user did indeed have the single highest score.
+    if (score > a1.get_score() && score > a2.get_score() && score > a3.get_score())
+        cout << "Congrats on winning the game, " << user.get_name() << endl;
 }
