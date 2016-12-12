@@ -238,9 +238,10 @@ void startNewGame()
                     cin >> userChoice;
 
                     //Makes sure user picks a valid value
-                    while (userChoice < 1 || userChoice > 13)
+                    while ((userChoice < 1 || userChoice > 13) || user.lastInd(handptr, userChoice) == -1)
                     {
-                        cout << "Invalid choice, pick a value (1 - 13)";
+                        cout << "Invalid choice, pick a value (1 - 13) from your corresponding deck" << endl;
+                        user.showHand(handptr);
                         cin >> userChoice;
                     }
 
